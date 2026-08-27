@@ -7,7 +7,8 @@ public static class ConfigurationManager
     private static readonly Lazy<TestSettings> LazySettings =
         new(Load);
 
-    public static TestSettings Settings => LazySettings.Value;
+    public static TestSettings Settings =>
+        LazySettings.Value;
 
     private static TestSettings Load()
     {
@@ -44,6 +45,12 @@ public static class ConfigurationManager
                     "SAUCE_API_BASE_URL"
                 )
                 ?? settings.ApiBaseUrl,
+
+            DatabaseConnectionString =
+                Environment.GetEnvironmentVariable(
+                    "SAUCE_DATABASE_CONNECTION_STRING"
+                )
+                ?? settings.DatabaseConnectionString,
 
             Browser =
                 Environment.GetEnvironmentVariable(
