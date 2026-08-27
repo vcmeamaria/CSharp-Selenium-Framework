@@ -14,8 +14,8 @@ public sealed class LoginTests : BaseTest
     [Test]
     [Category("Smoke")]
     [AllureFeature("Authentication")]
-    [AllureStory("Valid login")]
-    public void ValidUserCanLogin()
+    [AllureStory("Valid login using JSON data")]
+    public void ValidUserCanLoginUsingJsonData()
     {
         string username = JsonReader.GetValue(
             "loginData.json",
@@ -27,6 +27,37 @@ public sealed class LoginTests : BaseTest
             "loginData.json",
             "validUser",
             "password"
+        );
+
+        var inventory = new LoginPage(DriverContext.Driver)
+            .Open(Settings.BaseUrl)
+            .LoginAs(username, password);
+
+        Assert.That(
+            inventory.IsLoaded(),
+            Is.True,
+            "Inventory page was not displayed after login."
+        );
+    }
+
+    [Test]
+    [Category("Smoke")]
+    [AllureFeature("Authentication")]
+    [AllureStory("Valid login using Excel data")]
+    public void ValidUserCanLoginUsingExcelData()
+    {
+        string username = ExcelReader.GetValue(
+            "loginData.xlsx",
+            "LoginData",
+            2,
+            1
+        );
+
+        string password = ExcelReader.GetValue(
+            "loginData.xlsx",
+            "LoginData",
+            2,
+            2
         );
 
         var inventory = new LoginPage(DriverContext.Driver)
