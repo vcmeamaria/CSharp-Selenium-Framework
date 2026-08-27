@@ -2,23 +2,34 @@ namespace SauceDemo.Automation.Config;
 
 public sealed class TestSettings
 {
-    public string BaseUrl { get; init; } = "https://www.saucedemo.com/";
+    public string BaseUrl { get; init; } =
+        "https://www.saucedemo.com/";
 
-    public string ApiBaseUrl { get; init; } = "https://reqres.in/api";
+    public string ApiBaseUrl { get; init; } =
+        "https://reqres.in/api";
 
-    public string Browser { get; init; } = "chrome";
+    public string DatabaseConnectionString { get; init; } =
+        string.Empty;
+
+    public string Browser { get; init; } =
+        "chrome";
 
     public bool Headless { get; init; }
 
-    public int ExplicitWaitSeconds { get; init; } = 10;
+    public int ExplicitWaitSeconds { get; init; } =
+        10;
 
-    public int PageLoadTimeoutSeconds { get; init; } = 30;
+    public int PageLoadTimeoutSeconds { get; init; } =
+        30;
 
-    public string ReportType { get; init; } = "both";
+    public string ReportType { get; init; } =
+        "both";
 
-    public string Username { get; init; } = "standard_user";
+    public string Username { get; init; } =
+        "standard_user";
 
-    public string Password { get; init; } = "secret_sauce";
+    public string Password { get; init; } =
+        "secret_sauce";
 
     public string ScreenshotDirectory { get; init; } =
         "artifacts/screenshots";
