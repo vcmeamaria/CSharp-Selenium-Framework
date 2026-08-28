@@ -6,7 +6,8 @@ public static class DatabaseHelper
 {
     public static object? ExecuteScalar(
         string connectionString,
-        string query)
+        string query,
+        IReadOnlyDictionary<string, object?>? parameters = null)
     {
         if (string.IsNullOrWhiteSpace(connectionString))
         {
@@ -30,6 +31,17 @@ public static class DatabaseHelper
             query,
             connection
         );
+
+        if (parameters is not null)
+        {
+            foreach (var parameter in parameters)
+            {
+                command.Parameters.AddWithValue(
+                    parameter.Key,
+                    parameter.Value ?? DBNull.Value
+                );
+            }
+        }
 
         connection.Open();
 

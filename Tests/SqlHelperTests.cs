@@ -17,63 +17,53 @@ public sealed class SqlHelperTests
     }
 
     [Test]
-    public void CountUserByEmail_ShouldIncludeEmail()
+    public void CountUserByEmail_ShouldUseEmailParameter()
     {
-        string sql = SqlHelper.CountUserByEmail(
-            "peter.parker@test.com"
-        );
+        string sql = SqlHelper.CountUserByEmail();
 
         Assert.That(
             sql,
             Is.EqualTo(
-                "SELECT COUNT(*) FROM Users WHERE Email='peter.parker@test.com';"
+                "SELECT COUNT(*) FROM Users WHERE Email=@Email;"
             )
         );
     }
 
     [Test]
-    public void InsertUser_ShouldReturnExpectedSql()
+    public void InsertUser_ShouldUseParameters()
     {
-        string sql = SqlHelper.InsertUser(
-            "Peter Parker",
-            "peter.parker@test.com"
-        );
+        string sql = SqlHelper.InsertUser();
 
         Assert.That(
             sql,
             Is.EqualTo(
-                "INSERT INTO Users(Name, Email) VALUES ('Peter Parker', 'peter.parker@test.com');"
+                "INSERT INTO Users(Name, Email) VALUES (@Name, @Email);"
             )
         );
     }
 
     [Test]
-    public void UpdateUserName_ShouldReturnExpectedSql()
+    public void UpdateUserName_ShouldUseParameters()
     {
-        string sql = SqlHelper.UpdateUserName(
-            "peter.parker@test.com",
-            "Peter B Parker"
-        );
+        string sql = SqlHelper.UpdateUserName();
 
         Assert.That(
             sql,
             Is.EqualTo(
-                "UPDATE Users SET Name='Peter B Parker' WHERE Email='peter.parker@test.com';"
+                "UPDATE Users SET Name=@Name WHERE Email=@Email;"
             )
         );
     }
 
     [Test]
-    public void DeleteUserByEmail_ShouldReturnExpectedSql()
+    public void DeleteUserByEmail_ShouldUseEmailParameter()
     {
-        string sql = SqlHelper.DeleteUserByEmail(
-            "peter.parker@test.com"
-        );
+        string sql = SqlHelper.DeleteUserByEmail();
 
         Assert.That(
             sql,
             Is.EqualTo(
-                "DELETE FROM Users WHERE Email='peter.parker@test.com';"
+                "DELETE FROM Users WHERE Email=@Email;"
             )
         );
     }

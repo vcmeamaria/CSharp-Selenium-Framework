@@ -12,83 +12,30 @@ public static class SqlHelper
         return "SELECT COUNT(*) FROM Users;";
     }
 
-    public static string CountUserByEmail(string email)
+    public static string CountUserByEmail()
     {
-        if (string.IsNullOrWhiteSpace(email))
-        {
-            throw new ArgumentException(
-                "Email cannot be empty.",
-                nameof(email)
-            );
-        }
-
-        return $"SELECT COUNT(*) FROM Users WHERE Email='{email}';";
+        return "SELECT COUNT(*) FROM Users WHERE Email=@Email;";
     }
 
-    public static string InsertUser(
-        string name,
-        string email)
+    public static string InsertUser()
     {
-        if (string.IsNullOrWhiteSpace(name))
-        {
-            throw new ArgumentException(
-                "Name cannot be empty.",
-                nameof(name)
-            );
-        }
-
-        if (string.IsNullOrWhiteSpace(email))
-        {
-            throw new ArgumentException(
-                "Email cannot be empty.",
-                nameof(email)
-            );
-        }
-
         return
-            $"INSERT INTO Users(Name, Email) " +
-            $"VALUES ('{name}', '{email}');";
+            "INSERT INTO Users(Name, Email) " +
+            "VALUES (@Name, @Email);";
     }
 
-    public static string UpdateUserName(
-        string email,
-        string newName)
+    public static string UpdateUserName()
     {
-        if (string.IsNullOrWhiteSpace(email))
-        {
-            throw new ArgumentException(
-                "Email cannot be empty.",
-                nameof(email)
-            );
-        }
-
-        if (string.IsNullOrWhiteSpace(newName))
-        {
-            throw new ArgumentException(
-                "New name cannot be empty.",
-                nameof(newName)
-            );
-        }
-
         return
-            $"UPDATE Users " +
-            $"SET Name='{newName}' " +
-            $"WHERE Email='{email}';";
+            "UPDATE Users " +
+            "SET Name=@Name " +
+            "WHERE Email=@Email;";
     }
 
-    public static string DeleteUserByEmail(
-        string email)
+    public static string DeleteUserByEmail()
     {
-        if (string.IsNullOrWhiteSpace(email))
-        {
-            throw new ArgumentException(
-                "Email cannot be empty.",
-                nameof(email)
-            );
-        }
-
         return
-            $"DELETE FROM Users " +
-            $"WHERE Email='{email}';";
+            "DELETE FROM Users " +
+            "WHERE Email=@Email;";
     }
 }
