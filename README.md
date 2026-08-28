@@ -22,13 +22,13 @@ dotnet test
 
 The framework can be configured using environment variables:
 
-- `SAUCE_BROWSER` - browser to use, such as Chrome
-- `SAUCE_HEADLESS` - run the browser without opening a visible window
-- `SAUCE_REPORT_TYPE` - reporting option
-- `SAUCE_USERNAME` - override the login username
-- `SAUCE_PASSWORD` - override the login password
-- `SAUCE_API_BASE_URL` - override the API URL
-- `SAUCE_DATABASE_CONNECTION_STRING` - database connection string
+- `SAUCE_BROWSER`
+- `SAUCE_HEADLESS`
+- `SAUCE_REPORT_TYPE`
+- `SAUCE_USERNAME`
+- `SAUCE_PASSWORD`
+- `SAUCE_API_BASE_URL`
+- `SAUCE_DATABASE_CONNECTION_STRING`
 
 ## Reports
 
@@ -50,6 +50,26 @@ To view an Allure HTML report:
 allure serve allure-results
 ```
 
+## Demo Test Suite
+
+Five distinct Selenium tests are included for demonstrating different testing approaches.
+
+| Test Case | Type | Scenario |
+|---|---|---|
+| `TC_LOGIN_001` | Functional / Positive | Login successfully using valid credentials |
+| `TC_LOGIN_002` | Functional / Negative | Reject login when an invalid password is used |
+| `TC_SECURITY_001` | Security | Block a SQL-injection-style login attempt |
+| `TC_SORT_001` | Functional / Usability | Verify products sort correctly from price low to high |
+| `TC_E2E_001` | End-to-End / Integration | Complete the full login, cart and checkout journey |
+
+The demo tests can be found in:
+
+```text
+Tests/Demo/SauceDemoDemoTests.cs
+```
+
+Each test includes its test case ID, type, priority, test data and expected result.
+
 ## Project Structure
 
 ```text
@@ -58,19 +78,23 @@ Config/
 └── TestSettings.cs           # Defines framework settings
 
 Core/
-├── DriverContext.cs          # Stores the WebDriver safely between tests
-└── DriverFactory.cs          # Creates Chrome, Edge or Firefox drivers
+├── DriverContext.cs          # Stores WebDriver safely between tests
+└── DriverFactory.cs          # Creates and configures browser drivers
 
 Listeners/
-└── TestListenerAttribute.cs  # Logs test start, pass, fail and skipped events
+└── TestListenerAttribute.cs  # Logs test lifecycle events
 
 Pages/
-├── BasePage.cs               # Shared page actions
-├── LoginPage.cs              # SauceDemo login page
-└── InventoryPage.cs          # SauceDemo inventory page
+├── BasePage.cs               # Shared page functionality
+├── LoginPage.cs              # Login page actions
+├── InventoryPage.cs          # Products and sorting actions
+├── CartPage.cs               # Shopping cart actions
+├── CheckoutPage.cs           # Customer information step
+├── CheckoutOverviewPage.cs   # Order review step
+└── CheckoutCompletePage.cs   # Order confirmation step
 
 Reporting/
-└── ExtentReportManager.cs    # Creates Extent HTML test reports
+└── ExtentReportManager.cs    # Generates Extent HTML reports
 
 TestData/
 ├── loginData.json            # JSON login test data
@@ -78,10 +102,12 @@ TestData/
 └── sample.txt                # File-reader test data
 
 Tests/
+├── Demo/
+│   └── SauceDemoDemoTests.cs # Five demonstration test cases
 ├── ApiTests.cs               # API tests
 ├── BaseTest.cs               # Selenium setup and cleanup
 ├── FileReaderTests.cs        # File utility tests
-├── LoginTests.cs             # Selenium login tests
+├── LoginTests.cs             # Data-driven login tests
 └── SqlHelperTests.cs         # SQL helper tests
 
 Utilities/
@@ -90,20 +116,20 @@ Utilities/
 ├── ExcelReader.cs            # Reads Excel test data
 ├── FileReaderHelper.cs       # Reads text files
 ├── JsonReader.cs             # Reads JSON test data
-├── LogManager.cs             # Configures Serilog logging
+├── LogManager.cs             # Configures logging
 ├── ScreenshotUtils.cs        # Captures failure screenshots
-├── SqlHelper.cs              # Provides parameterized SQL queries
+├── SqlHelper.cs              # Provides parameterized SQL
 └── WaitUtils.cs              # Provides explicit Selenium waits
 
 Properties/
-└── AssemblyInfo.cs           # Configures NUnit parallel execution
+└── AssemblyInfo.cs           # Configures parallel execution
 
 .github/workflows/
-└── selenium-tests.yml        # Runs the test suite with GitHub Actions
+└── selenium-tests.yml        # Runs tests with GitHub Actions
 
 appsettings.json              # Main framework configuration
-allureConfig.json             # Allure reporting configuration
-SauceDemo.Automation.csproj   # Project dependencies and build settings
+allureConfig.json             # Allure configuration
+SauceDemo.Automation.csproj   # Project dependencies
 ```
 
 ## Features
@@ -111,6 +137,10 @@ SauceDemo.Automation.csproj   # Project dependencies and build settings
 - Selenium WebDriver
 - NUnit
 - Page Object Model
+- Positive and negative functional testing
+- Security test scenario
+- Usability validation
+- End-to-end checkout testing
 - JSON and Excel test data
 - RestSharp API testing
 - Database and parameterized SQL support
