@@ -2,6 +2,7 @@ using Allure.NUnit;
 using Allure.NUnit.Attributes;
 using NUnit.Framework;
 using SauceDemo.Automation.Core;
+using SauceDemo.Automation.Listeners;
 using SauceDemo.Automation.Pages;
 using SauceDemo.Automation.Utilities;
 
@@ -9,6 +10,7 @@ namespace SauceDemo.Automation.Tests;
 
 [AllureNUnit]
 [AllureEpic("SauceDemo Web UI")]
+[TestListener]
 public sealed class LoginTests : BaseTest
 {
     [Test]
@@ -29,9 +31,11 @@ public sealed class LoginTests : BaseTest
             "password"
         );
 
-        var inventory = new LoginPage(DriverContext.Driver)
-            .Open(Settings.BaseUrl)
-            .LoginAs(username, password);
+        var inventory = new LoginPage(
+            DriverContext.Driver
+        )
+        .Open(Settings.BaseUrl)
+        .LoginAs(username, password);
 
         Assert.That(
             inventory.IsLoaded(),
@@ -60,9 +64,11 @@ public sealed class LoginTests : BaseTest
             2
         );
 
-        var inventory = new LoginPage(DriverContext.Driver)
-            .Open(Settings.BaseUrl)
-            .LoginAs(username, password);
+        var inventory = new LoginPage(
+            DriverContext.Driver
+        )
+        .Open(Settings.BaseUrl)
+        .LoginAs(username, password);
 
         Assert.That(
             inventory.IsLoaded(),
