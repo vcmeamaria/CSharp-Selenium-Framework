@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using AventStack.ExtentReports;
 using AventStack.ExtentReports.Reporter;
 
@@ -11,13 +12,25 @@ public static class ExtentReportManager
 
     private static readonly AsyncLocal<ExtentTest?> Current = new();
 
+    private static readonly AsyncLocal<Stopwatch?> CurrentTimer = new();
+
     public static bool Enabled { get; private set; }
 
-    public static void Initialise(string reportType, string directory)
+    public static void Initialise(
+        string reportType,
+        string directory,
+        string logDirectory)
     {
         Enabled =
-            reportType.Equals("extent", StringComparison.OrdinalIgnoreCase) ||
-            reportType.Equals("both", StringComparison.OrdinalIgnoreCase);
+            reportType.Equals(
+                "extent",
+                StringComparison.OrdinalIgnoreCase
+            )
+            ||
+            reportType.Equals(
+                "both",
+                StringComparison.OrdinalIgnoreCase
+            );
 
         if (!Enabled || _extent is not null)
         {
@@ -31,12 +44,20 @@ public static class ExtentReportManager
                 return;
             }
 
-            // Convert the report directory into a full path.
             string reportDirectory = Path.IsPathRooted(directory)
                 ? directory
-                : Path.Combine(AppContext.BaseDirectory, directory);
+                : Path.Combine(
+                    AppContext.BaseDirectory,
+                    directory
+                );
 
-            // Make sure the folder exists before ExtentReports writes to it.
+            string fullLogDirectory = Path.IsPathRooted(logDirectory)
+                ? logDirectory
+                : Path.Combine(
+                    AppContext.BaseDirectory,
+                    logDirectory
+                );
+
             Directory.CreateDirectory(reportDirectory);
 
             string reportPath = Path.Combine(
@@ -44,55 +65,129 @@ public static class ExtentReportManager
                 $"ExtentReport_{DateTime.Now:yyyyMMdd_HHmmss}.html"
             );
 
-            var reporter = new ExtentSparkReporter(reportPath);
+            var reporter =
+                new ExtentSparkReporter(reportPath);
 
             _extent = new ExtentReports();
 
             _extent.AttachReporter(reporter);
 
-            _extent.AddSystemInfo("Framework", "Selenium C#");
+            _extent.AddSystemInfo(
+                "Framework",
+                "Selenium C#"
+            );
+
+            _extent.AddSystemInfo(
+                "Runtime",
+                ".NET 8"
+            );
+
+            _extent.AddSystemInfo(
+                "Test Framework",
+                "NUnit"
+            );
+
+            _extent.AddSystemInfo(
+                "Logs",
+                fullLogDirectory
+            );
         }
     }
 
     public static void Start(string name)
-    {
-        if (Enabled)
-        {
-            Current.Value = _extent!.CreateTest(name);
-        }
-    }
-
-    public static void Pass(string message)
-    {
-        if (Enabled)
-        {
-            Current.Value?.Pass(message);
-        }
-    }
-
-    public static void Fail(string message, string? screenshot = null)
     {
         if (!Enabled)
         {
             return;
         }
 
+        Current.Value =
+            _extent!.CreateTest(name);
+
+        CurrentTimer.Value =
+            Stopwatch.StartNew();
+
+        Current.Value.Info(
+            $"Test started at {DateTime.Now:HH:mm:ss}"
+        );
+    }
+
+    public static void Pass(string message)
+    {
+        if (!Enabled)
+        {
+            return;
+        }
+
+        TimeSpan duration =
+            StopTimer();
+
+        Current.Value?.Pass(message);
+
+        Current.Value?.Info(
+            $"Duration: {duration.TotalSeconds:F2} seconds"
+        );
+    }
+
+    public static void Fail(
+        string message,
+        string? screenshot = null,
+        string? stackTrace = null)
+    {
+        if (!Enabled)
+        {
+            return;
+        }
+
+        TimeSpan duration =
+            StopTimer();
+
         Current.Value?.Fail(message);
 
-        if (screenshot is not null)
+        Current.Value?.Info(
+            $"Duration: {duration.TotalSeconds:F2} seconds"
+        );
+
+        if (!string.IsNullOrWhiteSpace(stackTrace))
         {
-            Current.Value?.AddScreenCaptureFromPath(screenshot);
+            Current.Value?.Info(
+                $"Stack trace:{Environment.NewLine}{stackTrace}"
+            );
+        }
+
+        if (!string.IsNullOrWhiteSpace(screenshot))
+        {
+            Current.Value?.AddScreenCaptureFromPath(
+                screenshot
+            );
         }
     }
 
     public static void Flush()
     {
-        if (Enabled)
+        if (!Enabled)
         {
-            lock (Sync)
-            {
-                _extent?.Flush();
-            }
+            return;
         }
+
+        lock (Sync)
+        {
+            _extent?.Flush();
+        }
+    }
+
+    private static TimeSpan StopTimer()
+    {
+        Stopwatch? timer =
+            CurrentTimer.Value;
+
+        if (timer is null)
+        {
+            return TimeSpan.Zero;
+        }
+
+        timer.Stop();
+
+        return timer.Elapsed;
     }
 }
