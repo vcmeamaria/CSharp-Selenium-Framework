@@ -22,7 +22,8 @@ public abstract class BaseTest
 
         ExtentReportManager.Initialise(
             Settings.ReportType,
-            Settings.ExtentReportDirectory
+            Settings.ExtentReportDirectory,
+            Settings.LogDirectory
         );
     }
 
@@ -86,10 +87,13 @@ public abstract class BaseTest
 
                 ExtentReportManager.Fail(
                     result.Message ?? "Test failed",
-                    screenshot
+                    screenshot,
+                    result.StackTrace
                 );
             }
-            else if (result.Outcome.Status == TestStatus.Passed)
+            else if (
+                result.Outcome.Status == TestStatus.Passed
+            )
             {
                 ExtentReportManager.Pass(
                     "Test passed"
