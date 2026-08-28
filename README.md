@@ -44,11 +44,21 @@ Allure results are generated in:
 allure-results/
 ```
 
-To view an Allure HTML report:
+### Run Allure Report
+
+After running the tests, navigate to the build output folder:
+
+```bash
+cd bin/Debug/net8.0
+```
+
+Then open the Allure report:
 
 ```bash
 allure serve allure-results
 ```
+
+This generates and opens the interactive Allure HTML report in the browser.
 
 ## Demo Test Suite
 
