@@ -40,11 +40,6 @@ public abstract class BaseTest
         LogManager.Logger.Information(
             "Browser launched"
         );
-
-        LogManager.Logger.Information(
-            "Starting {Test}",
-            TestContext.CurrentContext.Test.Name
-        );
     }
 
     [TearDown]
@@ -93,19 +88,10 @@ public abstract class BaseTest
                     result.Message ?? "Test failed",
                     screenshot
                 );
-
-                LogManager.Logger.Error(
-                    "Test failed: {Message}",
-                    result.Message
-                );
             }
-            else
+            else if (result.Outcome.Status == TestStatus.Passed)
             {
                 ExtentReportManager.Pass(
-                    "Test passed"
-                );
-
-                LogManager.Logger.Information(
                     "Test passed"
                 );
             }
