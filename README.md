@@ -2,9 +2,9 @@
 
 A modern automation testing framework built with **C#, Selenium WebDriver and NUnit**.
 
-The framework supports UI testing, API testing, external test data, SQL utilities, logging, screenshots, reporting, parallel execution and CI/CD.
+The framework supports UI testing, API testing, external test data, SQL utilities, logging, screenshots, reporting, parallel execution, Docker, Selenium Grid and CI/CD.
 
-## Run
+## Run Locally
 
 Restore the project dependencies:
 
@@ -29,6 +29,106 @@ The framework can be configured using environment variables:
 - `SAUCE_PASSWORD`
 - `SAUCE_API_BASE_URL`
 - `SAUCE_DATABASE_CONNECTION_STRING`
+- `SELENIUM_GRID_URL`
+
+## Docker and Selenium Grid
+
+The framework can run Selenium tests using a Dockerised Selenium Grid.
+
+The Docker setup contains:
+
+```text
+C# Test Container
+        |
+        v
+Selenium Grid Hub
+        |
+   +----+----+
+   |         |
+   v         v
+Chrome    Firefox
+Node       Node
+```
+
+### Start Selenium Grid
+
+Make sure Docker Desktop is running.
+
+From the project root, run:
+
+```bash
+docker compose up -d
+```
+
+Check the running containers:
+
+```bash
+docker ps
+```
+
+The following containers should be running:
+
+```text
+selenium-hub
+selenium-chrome
+selenium-firefox
+```
+
+### Selenium Grid Dashboard
+
+Open:
+
+```text
+http://localhost:4444/ui
+```
+
+This displays the Selenium Grid dashboard and available Chrome and Firefox nodes.
+
+### Watch Chrome with noVNC
+
+Open:
+
+```text
+http://localhost:7900
+```
+
+This allows the Chrome browser running inside Docker to be viewed while Selenium tests execute.
+
+### Watch Firefox with noVNC
+
+Open:
+
+```text
+http://localhost:7901
+```
+
+### Build the C# Test Container
+
+Run:
+
+```bash
+docker compose build tests
+```
+
+### Run All Demo Tests Through Chrome
+
+```bash
+docker compose run --rm tests dotnet test SauceDemo.Automation.csproj --no-restore --filter "FullyQualifiedName~SauceDemoDemoTests" --verbosity normal
+```
+
+This runs the five demonstration tests through the Chrome node in Selenium Grid.
+
+### Run a Test Through Firefox
+
+```bash
+docker compose run --rm -e SAUCE_BROWSER=firefox tests dotnet test SauceDemo.Automation.csproj --no-restore --filter "FullyQualifiedName~TC_LOGIN_001" --verbosity normal
+```
+
+### Stop Selenium Grid
+
+```bash
+docker compose down
+```
 
 ## Reports
 
@@ -89,7 +189,7 @@ Config/
 
 Core/
 ├── DriverContext.cs          # Stores WebDriver safely between tests
-└── DriverFactory.cs          # Creates and configures browser drivers
+└── DriverFactory.cs          # Creates local or Selenium Grid browser drivers
 
 Listeners/
 └── TestListenerAttribute.cs  # Logs test lifecycle events
@@ -137,6 +237,9 @@ Properties/
 .github/workflows/
 └── selenium-tests.yml        # Runs tests with GitHub Actions
 
+Dockerfile                    # Builds the C# Selenium test container
+docker-compose.yml            # Creates Selenium Grid and browser nodes
+.dockerignore                 # Excludes local build files from Docker
 appsettings.json              # Main framework configuration
 allureConfig.json             # Allure configuration
 SauceDemo.Automation.csproj   # Project dependencies
@@ -151,6 +254,10 @@ SauceDemo.Automation.csproj   # Project dependencies
 - Security test scenario
 - Usability validation
 - End-to-end checkout testing
+- Chrome and Firefox testing
+- Selenium Grid
+- Docker and Docker Compose
+- noVNC browser viewing
 - JSON and Excel test data
 - RestSharp API testing
 - Database and parameterized SQL support
